@@ -1,27 +1,33 @@
-from urllib.parse import urlparse, ParseResult
-from flask import Flask, render_template, redirect, url_for
-from flask import request as frequest
 import json
+from urllib.parse import ParseResult, urlparse
+
 import requests
+from flask import Flask, redirect, render_template
+from flask import request as frequest
+from flask import url_for
 
 app = Flask(__name__)
 
-shrunk = []
+shrunk: dict = []
 
 @app.route("/", methods=["POST", "GET"])
 def root():
+
+    # If requst method is GET
     if frequest.method == "GET":
         return render_template("index.html")
  
-    payload = json.dumps( {"url": frequest.form["inputUrl"]} )
-    response = invoke_shrink_api(payload)
+    # If request method is POST
+    payload: str = json.dumps( {"url": frequest.form["inputUrl"]} )
+    response: requests.Response = invoke_shrink_api(payload)
     
+    # Complain if request failed
     if response.status_code not in (200, 201):
         return render_template("index.html", error=True)
 
-    response_dict = json.loads(response.text)
-    response_short = response_dict["short"]
-    short_url = frequest.host_url + response_short
+    response_dict: dict = json.loads(response.text)
+    response_short: str = response_dict["short"]
+    short_url: str = frequest.host_url + response_short
     response_dict["short"] = short_url
 
     shrunk.insert(0, response_dict)
@@ -30,34 +36,62 @@ def root():
 
 @app.errorhandler(404)
 def not_found(e):
-    short = frequest.url.split("/")[-1]
-    payload = json.dumps( {"short": short} )
-    response = invoke_expand_api(payload)
+    short: str = frequest.url.split("/")[-1]
+    payload: str = json.dumps( {"short": short} )
+    response: requests.Response = invoke_expand_api(payload)
 
+    # If given path is previously shortened
     if response.status_code == 200:
-        response_dict = json.loads(response.text)
-        response_long = response_dict["long"]
+        response_dict: dict = json.loads(response.text)
+        response_long: str = response_dict["long"]
 
-        urlp = urlparse(response_long, "http")
+        # Parse url into proper redirectable url
+        urlp: ParseResult = urlparse(response_long, "http")
         if not urlp.netloc:
             urlp = urlp._replace(netloc=urlp.path)
             urlp = urlp._replace(path="")
 
         return redirect(urlp.geturl(), 302)
+
+    # If given path is not previously shortened, quietly redirect to root
     else:
         return redirect(url_for(".root"))
 
 def invoke_shrink_api(payload: str) -> requests.Response:
-    url = "https://asia-southeast2-nomadic-thinker-355706.cloudfunctions.net/url-shrinker-function"
-    headers = {
+    """
+    Invokes the URL shrinker API
+
+    Parameters
+    ----------
+    payload: str
+        The payload to send to the API
+
+    Return
+    ------
+    The response of the invocation
+    """
+    url: str = "https://asia-southeast2-nomadic-thinker-355706.cloudfunctions.net/url-shrinker-function"
+    headers: dict = {
         "Content-Type": "application/json"
     }   
 
     return requests.request("POST", url, headers=headers, data=payload)
 
 def invoke_expand_api(payload: str) -> requests.Response:
-    url = "https://asia-southeast2-nomadic-thinker-355706.cloudfunctions.net/url-expand-function"
-    headers = {
+    """
+    Invokes the URL expander API
+
+    Parameters
+    ----------
+    payload: str
+        The payload to send to the API
+
+    Return
+    ------
+    The response of the invocation
+    """
+    url: str = "https://asia-southeast2-nomadic-thinker-355706.cloudfunctions.net/url-expand-function"
+    headers: dict = {
         "Content-Type": "application/json"
     }   
 
