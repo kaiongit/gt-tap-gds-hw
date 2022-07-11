@@ -1,0 +1,61 @@
+* {
+  text-align: left;
+}
+
+#headerText h3 {
+  font-weight: bolder;
+  letter-spacing: 1px;
+}
+
+#headerImage img {
+  display: block;
+  margin: auto;
+  width: 100%;
+
+  animation: shake 2s;
+  animation-iteration-count: infinite;
+}
+
+#shrinkForm form {
+  margin-bottom: 0;
+}
+
+#shrinkForm #inputUrl {
+  padding: 10px;
+}
+
+#shrinkForm #submitButton {
+  font-family: Raleway, "sans-serif";
+  font-weight: bold;
+  font-size: 12px;
+  letter-spacing: 1.6px;
+}
+
+#shrinkHistory mark {
+  padding: 5px 10px;
+  background: lightgray;
+  overflow-wrap: break-word;
+}
+
+#shrinkHistory p {
+  margin-bottom: 10px;
+  line-height: calc(1em + 15px);
+}
+
+@media all and (max-width: 540px) {
+  #headerImage {
+    display: none;
+  }
+} 
+
+@media only screen and (min-width: 1150px) {
+  #headerText {
+    transform: translateY(30%);
+  }
+}
+
+@keyframes shake {
+  0% { transform: rotate(1deg); }
+  50% { transform: rotate(-1deg); }
+  100% { transform: rotate(1deg); }
+}

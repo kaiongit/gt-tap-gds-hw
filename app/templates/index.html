@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+
+    <title>URL Shrinker</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2280%22>⏪</text></svg>">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css" integrity="sha512-EZLkOqwILORob+p0BXZc+Vm3RgJBOe1Iq/0fiI7r/wJgzOFZMlsqTa29UEl6v6U6gsV4uIpsNZoV32YZqrCRCQ==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway&amp;display=swap" rel="stylesheet"> 
+    
+    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</head>
+<body class="container">
+    <br><br><br><br>
+    <header class="row">
+        <div id="headerText" class="seven columns">
+            <h3>
+                URL Shrinker
+                <a href="https://www.github.com/kaiongit/gt-tap-gds-hw">(?)</a>
+            </h3>
+            <p>Input a loooong URL into the text box below and we'll give you a (kinda) short URL that you 
+            can share with your friends. Or to write down with pen and paper the old fashion way like how we
+            use to bookmark URLs back in ye' the old days!</p>
+        </div>
+
+        <div id="headerImage" class="five columns">
+            <img src="{{ url_for('static', filename='big-shoes-torso.png') }}" alt="Illustration of bearded man with a shrugging expression in front of a laptop">
+        </div>
+    </header>
+
+    <section>
+        <div id="shrinkForm" class="row">
+            <form class="seven columns" method="post" >
+                <input id="inputUrl" name="inputUrl" class="u-full-width" minlength="1" required placeholder="my.verylongurl.com/even-longer"></input>
+                <input id="submitButton" class="button-primary" type="submit" value="Shrink!">
+            </form>
+        </div>
+
+        <div id="shrinkHistory" class="row">
+            {% for page in shrunk %}
+                <p>
+                    Shrunk <mark>{{ page["long"] }}</mark> to <mark>{{ page["short"] }}</mark>
+                </p>
+            {% endfor %}
+        </div>
+    </section>
+</body>
+</html>
