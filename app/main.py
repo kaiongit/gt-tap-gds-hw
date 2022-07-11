@@ -25,8 +25,34 @@ def root():
 
     return render_template("index.html", shrunk=shrunk)
 
+@app.errorhandler(404)
+def not_found(e):
+    short = frequest.url.split("/")[-1]
+    payload = json.dumps( {"short": short} )
+    response = invoke_expand_api(payload)
+
+    if response.status_code == 200:
+        response_dict = json.loads(response.text)
+        response_long = response_dict["long"]
+
+        p = urlparse(response_long, "http")
+        netloc = p.netloc or p.path
+        path = p.path if p.netloc else ""
+
+        return redirect(p.geturl(), 302)
+    else:
+        return redirect(url_for(".root"))
+
 def invoke_shrink_api(payload: str) -> requests.Response:
     url = "https://asia-southeast2-nomadic-thinker-355706.cloudfunctions.net/url-shrinker-function"
+    headers = {
+        "Content-Type": "application/json"
+    }   
+
+    return requests.request("POST", url, headers=headers, data=payload)
+
+def invoke_expand_api(payload: str) -> requests.Response:
+    url = "https://asia-southeast2-nomadic-thinker-355706.cloudfunctions.net/url-expand-function"
     headers = {
         "Content-Type": "application/json"
     }   
