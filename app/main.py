@@ -35,11 +35,12 @@ def not_found(e):
         response_dict = json.loads(response.text)
         response_long = response_dict["long"]
 
-        p = urlparse(response_long, "http")
-        netloc = p.netloc or p.path
-        path = p.path if p.netloc else ""
+        urlp = urlparse(response_long, "http")
+        if not urlp.netloc:
+            urlp = urlp._replace(netloc=urlp.path)
+            urlp = urlp._replace(path="")
 
-        return redirect(p.geturl(), 302)
+        return redirect(urlp.geturl(), 302)
     else:
         return redirect(url_for(".root"))
 
