@@ -41,6 +41,10 @@
             </form>
         </div>
 
+        <div id="genericError" class="{{'shown' if error }}">
+            😢 Something went wrong! Try again in a bit? 😢
+        </div>
+
         <div id="shrinkHistory" class="row">
             {% for page in shrunk %}
                 <p>

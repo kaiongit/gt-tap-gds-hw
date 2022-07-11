@@ -16,6 +16,9 @@ def root():
     payload = json.dumps( {"url": frequest.form["inputUrl"]} )
     response = invoke_shrink_api(payload)
     
+    if response.status_code not in (200, 201):
+        return render_template("index.html", error=True)
+
     response_dict = json.loads(response.text)
     response_short = response_dict["short"]
     short_url = frequest.host_url + response_short
