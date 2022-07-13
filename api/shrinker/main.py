@@ -4,6 +4,7 @@ from flask import jsonify
 from google.cloud import firestore
 from google.cloud.firestore_v1.base_document import DocumentSnapshot
 from google.cloud.firestore_v1.collection import CollectionReference
+from google.cloud.firestore_v1.document import DocumentReference
 from random_words import RandomWords
 
 GCLOUD_PROJECT_NAME: str = "nomadic-thinker-355706"
@@ -38,11 +39,17 @@ def shrink_url_http(request):
 
     # If document already exist, return 200
     if doc:
-        short: str = doc.to_dict()["short"]
+        increment_count(doc.reference)
+
+        doc_dict: dict = doc.to_dict()
+        short: str = doc_dict["short"]
+        seen: int = doc_dict["seen"]
+
         return jsonify({
             "long": url,
             "short": short,
-            "exist": True
+            "exist": True,
+            "seen": seen
             }), 200
 
     # If document does not exist, create and return 201
@@ -51,8 +58,14 @@ def shrink_url_http(request):
         return jsonify({
             "long": url,
             "short": short,
-            "exist": False
+            "exist": False,
+            "seen": 1
             }), 201
+
+def increment_count(doc_ref: DocumentReference):
+    doc_ref.update({
+        "seen": firestore.Increment(1)
+    })
 
 def make_document_name(url: str) -> str:
     """
@@ -103,7 +116,8 @@ def set_new_doc(col_ref: CollectionReference, doc_name: str, url: str) -> str:
 
     doc_ref.set({
         "url": url,
-        "short": one_word
+        "short": one_word,
+        "seen": 1
     })
 
     return one_word
