@@ -48,7 +48,7 @@
         <div id="shrinkHistory" class="row">
             {% for page in shrunk %}
                 <p>
-                    Shrunk <mark>{{ page["long"] }}</mark> to <mark>{{ page["short"] }}</mark>
+                    Shrunk {{ "popular " if page["seen"] >= 5 }} <mark>{{ page["long"] }}</mark> to <mark>{{ page["short"] }}</mark>
                 </p>
             {% endfor %}
         </div>

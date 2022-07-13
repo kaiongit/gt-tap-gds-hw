@@ -38,10 +38,14 @@ def expand_url_http(request):
 
     # If document exists, return 200
     else:
-        long: str = doc.to_dict()["url"]
+        doc_dict: dict = doc.to_dict()
+        long: str = doc_dict["url"]
+        seen: int = doc_dict["seen"]
+
         return jsonify({
             "short": short,
-            "long": long        
+            "long": long,
+            "seen": seen
         }), 200
 
 def get_doc_or_none(col_ref: CollectionReference, short: str) -> DocumentSnapshot:
